@@ -1,16 +1,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+
+
 # from bm25 import load_chunks, build_bm25, search
 from src.bm25 import load_chunks, build_bm25, search
 
-app = FastAPI()
 
-app.add_middleware( #let it
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+
+app = FastAPI() #handle for fast api to work
+
+
+app.add_middleware( # thing between middleware and funciton request → [middleware] → chat() → [middleware] → response
+    CORSMiddleware, #rule call and receive from same address only
+    allow_origins=["http://localhost:3000"], #from where the call may come
+    allow_methods=["*"], #allow all request
+    allow_headers=["*"], #allow all headser
 )
 
 
@@ -19,18 +24,19 @@ bm25 = build_bm25(documents)
 
 
 @app.post("/chat")
-def chat(data: dict):
+def chat(data: dict): #function that takes data as which is a dictionary
 
-    question = data["question"]
-
-    results = search(
+    question = data["question"] 
+    #this contain queston as sting
+    
+    results = search(   #same as bm
         bm25,
         documents,
         question,
         top_k=5 #top kitna
     )
 
-    formatted_results = []
+    formatted_results = [] 
 
     for result in results:
 
